@@ -1,0 +1,131 @@
+services:
+  lab_info:
+    image: busybox:1.36
+    container_name: fastrent-info
+    depends_on:
+      db:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+      frontend:
+        condition: service_healthy
+      pgadmin:
+        condition: service_started
+    command:
+      - sh
+      - -c
+      - |
+        printf '%s\n' \
+        "=== DEV LAB STACK ===" \
+        "Projeto: fastrent" \
+        "Banco: PostgreSQL -> localhost:5432" \
+        "Backend: Node.js / Express -> localhost:8000" \
+        "Frontend: Vue MPA -> localhost:3000" \
+        "pgAdmin: http://localhost:5050" \
+        "=== ACESSOS ===" \
+        "PostgreSQL user: admin" \
+        "PostgreSQL password: admin" \
+        "Banco: fastrent" \
+        "pgAdmin email: admin@admin.com" \
+        "pgAdmin senha: admin123" \
+        "=== ONDE ALTERAR ===" \
+        "Banco: ./database/init/01-schema.sql" \
+        "Infra Docker: ./docker-compose.yml e ./.env" \
+        "Backend (Node.js / Express): ./backend/src/server.js" \
+        "Frontend (Vue MPA): ./frontend/src e arquivos HTML na raiz de ./frontend"
+        sleep infinity
+    restart: "no"
+
+  db:
+    image: postgres:16
+    container_name: fastrent-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: fastrent
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d fastrent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: fastrent-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  backend:
+    build:
+      context: ./backend
+    container_name: fastrent-backend
+    restart: unless-stopped
+    environment:
+      APP_DESCRIPTION: "FastRent"
+      DB_CLIENT: postgres
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: fastrent
+      DB_USER: admin
+      DB_PASSWORD: admin
+      DB_SCHEMA: public
+      PORT: 8000
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+      - backend_node_modules:/app/node_modules
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8000/api/health >/dev/null || exit 1"]
+      interval: 20s
+      timeout: 10s
+      retries: 15
+      start_period: 45s
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: fastrent-frontend
+    restart: unless-stopped
+    environment:
+      API_BASE_URL: http://localhost:8000/api
+      PORT: 3000
+    volumes:
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - |
+          curl -fsS http://127.0.0.1:3000/ >/dev/null && \
+          curl -fsS http://backend:8000/api/health >/dev/null
+      interval: 20s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+    ports:
+      - "3000:3000"
+
+volumes:
+  db_data:
+  backend_node_modules:
+  frontend_node_modules:
