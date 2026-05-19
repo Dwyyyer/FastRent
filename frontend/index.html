@@ -1,21 +1,595 @@
 <!doctype html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Vue MPA - Início</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <style>
-      body { font-family: Arial, sans-serif; margin: 24px; text-align: center; }
-      nav a { margin: 0 12px; }
-    </style>
-  </head>
-  <body>
-    <h1>Bem-vindo ao Laboratório Vue MPA</h1>
-    <p>Escolha uma seção para gerenciar:</p>
-    <nav>
-      <a href="/categories.html">Categorias</a>
-      <a href="/products.html">Produtos</a>
-    </nav>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>FastRent - Início</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- FONT AWESOME -->
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      overflow-x: hidden;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #0d2352;
+    }
+
+    /* =========================================================
+       HERO
+    ========================================================= */
+
+    .hero {
+      position: relative;
+
+      width: 100%;
+      min-height: 100vh;
+
+      background-color: #0d2352;
+
+      background-image:
+        radial-gradient(circle,
+          rgba(255, 255, 255, 0.12) 1.5px,
+          transparent 1.5px);
+
+      background-size: 28px 28px;
+
+      overflow: hidden;
+
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hero::before {
+      content: '';
+
+      position: absolute;
+      inset: 0;
+
+      background:
+        radial-gradient(ellipse at 0% 50%,
+          rgba(6, 18, 50, 0.7) 0%,
+          transparent 60%),
+
+        radial-gradient(ellipse at 100% 50%,
+          rgba(6, 18, 50, 0.5) 0%,
+          transparent 55%);
+
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* =========================================================
+       SCHEDULE
+    ========================================================= */
+
+    .schedule-wrapper {
+      position: absolute;
+
+      top: 22px;
+      left: 50%;
+
+      transform: translateX(-50%);
+
+      width: 92%;
+      max-width: 1100px;
+
+      z-index: 20;
+    }
+
+    .schedule-container {
+      width: 100%;
+
+      display: flex;
+      gap: 14px;
+
+      padding: 18px;
+
+      border-radius: 28px;
+
+      background: rgba(40, 44, 52, 0.92);
+
+      backdrop-filter: blur(12px);
+
+      box-shadow:
+        0 10px 40px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    }
+
+    .schedule-field {
+      flex: 1;
+
+      height: 58px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      background: #f5f5f5;
+
+      border-radius: 16px;
+
+      padding: 0 18px;
+
+      transition: 0.2s ease;
+    }
+
+    .schedule-field:hover {
+      transform: translateY(-2px);
+      background: white;
+    }
+
+    .schedule-field input {
+      width: 100%;
+      height: 100%;
+
+      border: none;
+      outline: none;
+
+      background: transparent;
+
+      font-size: 15px;
+      font-weight: 500;
+
+      color: #333;
+    }
+
+    .schedule-field input::placeholder {
+      color: #9a9a9a;
+    }
+
+    .schedule-field i {
+      font-size: 18px;
+      color: #111;
+
+      margin-left: 12px;
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator,
+    input[type="time"]::-webkit-calendar-picker-indicator {
+      opacity: 0;
+      position: absolute;
+    }
+
+    /* =========================================================
+       HERO BODY
+    ========================================================= */
+
+    .hero-body {
+      position: relative;
+      z-index: 2;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      flex: 1;
+
+      padding: 170px 48px 0;
+
+      gap: 24px;
+    }
+
+    /* =========================================================
+       LEFT CIRCLES
+    ========================================================= */
+
+    .hero-left {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .circle {
+      border-radius: 50%;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      text-align: center;
+    }
+
+    .circle-title {
+      width: 170px;
+      height: 170px;
+
+      background: #1a56db;
+      color: white;
+
+      font-size: 1.45rem;
+      font-weight: 800;
+
+      line-height: 1.2;
+
+      text-transform: uppercase;
+
+      box-shadow:
+        0 4px 24px rgba(26, 86, 219, 0.4);
+
+      z-index: 3;
+    }
+
+    .circle-plus {
+      width: 80px;
+      height: 80px;
+
+      background: #e8edf5;
+      color: #0d2352;
+
+      font-size: 2.2rem;
+      font-weight: 700;
+
+      margin-top: -24px;
+      margin-left: 20px;
+
+      z-index: 2;
+
+      box-shadow:
+        0 2px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .circle-tagline {
+      width: 120px;
+      height: 120px;
+
+      background: #1a56db;
+      color: white;
+
+      font-size: 1.55rem;
+      font-weight: 700;
+      font-style: italic;
+
+      margin-top: -28px;
+      margin-left: 50px;
+
+      z-index: 3;
+
+      box-shadow:
+        0 4px 24px rgba(26, 86, 219, 0.4);
+    }
+
+    /* =========================================================
+       CAR
+    ========================================================= */
+
+    .hero-car {
+      flex: 1;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      position: relative;
+    }
+
+    .hero-car img {
+      width: 100%;
+      max-width: 620px;
+
+      object-fit: contain;
+
+      mix-blend-mode: lighten;
+
+      filter:
+        drop-shadow(0 16px 40px rgba(0, 0, 0, 0.5));
+
+      position: relative;
+
+      bottom: -10px;
+    }
+
+    /* =========================================================
+       FOOTER
+    ========================================================= */
+
+    .hero-footer {
+      position: relative;
+      z-index: 2;
+
+      text-align: center;
+
+      padding: 14px 24px 0;
+
+      color: rgba(255, 255, 255, 0.85);
+
+      font-size: 1rem;
+    }
+
+    .hero-btn-wrap {
+      position: relative;
+      z-index: 2;
+
+      display: flex;
+      justify-content: center;
+
+      padding: 20px 24px 40px;
+    }
+
+    .btn-hero {
+      display: inline-block;
+
+      padding: 13px 40px;
+
+      border: 2px solid white;
+
+      color: white;
+
+      text-decoration: none;
+
+      font-size: 1rem;
+      font-weight: 800;
+
+      text-transform: uppercase;
+
+      border-radius: 4px;
+
+      transition: 0.2s;
+    }
+
+    .btn-hero:hover {
+      background: white;
+      color: #0d2352;
+    }
+
+    /* =========================================================
+       MOBILE
+    ========================================================= */
+
+    @media (max-width: 768px) {
+
+      body {
+        overflow-x: hidden;
+      }
+
+      .hero {
+        min-height: 100vh;
+        padding-bottom: 40px;
+      }
+
+      /* =========================
+         SCHEDULE
+      ========================= */
+
+      .schedule-wrapper {
+        width: calc(100% - 14px);
+
+        top: 10px;
+      }
+
+      .schedule-container {
+        flex-direction: column;
+
+        padding: 10px;
+
+        gap: 8px;
+
+        border-radius: 18px;
+      }
+
+      .schedule-field {
+        height: 42px;
+
+        border-radius: 12px;
+
+        padding: 0 12px;
+      }
+
+      .schedule-field input {
+        font-size: 14px;
+      }
+
+      .schedule-field i {
+        font-size: 16px;
+      }
+
+      /* =========================
+         HERO BODY
+      ========================= */
+
+      .hero-body {
+        flex-direction: column;
+
+        justify-content: flex-start;
+        align-items: center;
+
+        padding:
+          145px 12px 0;
+
+        gap: 0;
+      }
+
+      /* =========================
+         LEFT CIRCLES
+      ========================= */
+
+      .hero-left {
+        width: 100%;
+
+        transform: scale(0.85);
+
+        transform-origin: top left;
+
+        margin-bottom: -20px;
+      }
+
+      .circle-title {
+        width: 145px;
+        height: 145px;
+
+        font-size: 1.2rem;
+      }
+
+      .circle-plus {
+        width: 68px;
+        height: 68px;
+
+        font-size: 1.8rem;
+      }
+
+      .circle-tagline {
+        width: 105px;
+        height: 105px;
+
+        font-size: 1.3rem;
+      }
+
+      /* =========================
+         CARRO
+      ========================= */
+
+      .hero-car {
+        width: 100%;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        margin-top: -10px;
+      }
+
+      .hero-car img {
+        width: 155%;
+
+        min-width: 420px;
+
+        max-width: unset;
+
+        object-fit: contain;
+
+        margin-left: 10px;
+
+        bottom: 0;
+
+        filter:
+          drop-shadow(0 25px 50px rgba(0, 0, 0, .65));
+      }
+
+      /* =========================
+         FOOTER
+      ========================= */
+
+      .hero-footer {
+        font-size: .92rem;
+
+        padding:
+          8px 18px 0;
+      }
+
+      .hero-btn-wrap {
+        padding-top: 20px;
+      }
+
+      .btn-hero {
+        padding: 11px 24px;
+
+        font-size: .85rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <div id="navbar"></div>
+
+  <!-- HERO -->
+  <section class="hero">
+
+    <!-- SCHEDULE -->
+    <div class="schedule-wrapper">
+
+      <div class="schedule-container">
+
+        <!-- LOCAL -->
+        <div class="schedule-field">
+          <input
+            type="text"
+            placeholder="Onde você quer seu carro?" />
+
+          <i class="fa-solid fa-location-dot"></i>
+        </div>
+
+        <!-- DATA -->
+        <div class="schedule-field">
+          <input type="date" />
+
+          <i class="fa-regular fa-calendar"></i>
+        </div>
+
+        <!-- HORA -->
+        <div class="schedule-field">
+          <input type="time" />
+
+          <i class="fa-regular fa-clock"></i>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- HERO BODY -->
+    <div class="hero-body">
+
+      <!-- LEFT -->
+      <div class="hero-left">
+
+        <div class="circle circle-title">
+          SEU ALUGUEL
+        </div>
+
+        <div class="circle circle-plus">
+          +
+        </div>
+
+        <div class="circle circle-tagline">
+          Fácil!
+        </div>
+
+      </div>
+
+      <!-- CAR -->
+      <div class="hero-car">
+        <img
+          src="./assets/peugeot.png"
+          alt="Carro FastRent" />
+      </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <p class="hero-footer">
+      Aluguel de carros a um toque de distância.
+    </p>
+
+    <!-- BUTTON -->
+    <div class="hero-btn-wrap">
+      <a href="#planos" class="btn-hero">
+        Confira os planos
+      </a>
+    </div>
+
+  </section>
+
+  <script type="module" src="/src/main-index.js"></script>
+
+</body>
+
 </html>
