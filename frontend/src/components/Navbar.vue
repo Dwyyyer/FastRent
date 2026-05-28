@@ -24,7 +24,7 @@
 
                 <div class="auth-divider"></div>
 
-                <a href="#" class="btn-register">Cadastrar</a>
+                <a href="../../register.html" class="btn-register">Cadastrar</a>
             </div>
 
             <!-- Botão hamburger mobile -->
@@ -47,7 +47,7 @@
                 <a href="#" class="btn-login mobile-login">
                     <img src="../../assets/icons/login.png" class="login-icon">
                     <span>Login</span></a>
-                <a href="#" class="btn-register mobile-register">Cadastrar</a>
+                <a href="../../register.html" class="btn-register mobile-register">Cadastrar</a>
             </div>
         </div>
     </nav>
