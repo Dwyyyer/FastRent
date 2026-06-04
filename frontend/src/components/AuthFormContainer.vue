@@ -73,11 +73,12 @@ export default {
 <style scoped>
 .auth-container {
   width: 100%;
-  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #0f172a;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #0d2352;
   padding: 20px;
   box-sizing: border-box;
 }
@@ -85,7 +86,7 @@ export default {
 .auth-card {
   width: 100%;
   max-width: 420px;
-  background: #1e293b;
+  background: #0f172a;
   border-radius: 16px;
   padding: 32px;
   box-sizing: border-box;
