@@ -12,12 +12,12 @@
                 <li><a href="/index.html" :class="{ active: currentPage === 'index' }">Início</a></li>
                 <li><a href="/categories.html" :class="{ active: currentPage === 'categories' }">Assinaturas</a></li>
                 <li><a href="/products.html" :class="{ active: currentPage === 'products' }">Catálogo</a></li>
-                <li><a href="#" :class="{ active: currentPage === 'agencies' }">Rede de Agências</a></li>
+                <li><a href="/agency.html" :class="{ active: currentPage === 'agencies' }">Rede de Agências</a></li>
             </ul>
 
             <!-- Botões auth desktop -->
             <div class="nav-auth">
-                <a href="#" class="btn-login">
+                <a href="../../login.html" class="btn-login">
                     <img src="../../assets/icons/login.png" class="login-icon">
                     <span>Login</span> 
                 </a>
@@ -41,10 +41,10 @@
                 <li><a href="/index.html" @click="closeMenu">Início</a></li>
                 <li><a href="/categories.html" @click="closeMenu">Assinaturas</a></li>
                 <li><a href="/products.html" @click="closeMenu">Catálogo</a></li>
-                <li><a href="#" @click="closeMenu">Rede de Agências</a></li>
+                <li><a href="/agency.html" @click="closeMenu">Rede de Agências</a></li>
             </ul>
             <div class="mobile-auth">
-                <a href="#" class="btn-login mobile-login">
+                <a href="../../login.html" class="btn-login mobile-login">
                     <img src="../../assets/icons/login.png" class="login-icon">
                     <span>Login</span></a>
                 <a href="../../register.html" class="btn-register mobile-register">Cadastrar</a>

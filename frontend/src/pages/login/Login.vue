@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import AuthFormContainer from "../components/AuthFormContainer.vue";
+import AuthFormContainer from "../../components/AuthFormContainer.vue";
 
 export default {
   components: {
