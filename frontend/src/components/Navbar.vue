@@ -10,9 +10,9 @@
             <!-- Links desktop -->
             <ul class="nav-links">
                 <li><a href="/index.html" :class="{ active: currentPage === 'index' }">Início</a></li>
-                <li><a href="/categories.html" :class="{ active: currentPage === 'categories' }">Assinaturas</a></li>
-                <li><a href="/products.html" :class="{ active: currentPage === 'products' }">Catálogo</a></li>
-                <li><a href="/agency.html" :class="{ active: currentPage === 'agencies' }">Rede de Agências</a></li>
+                <li><a href="/signature.html" :class="{ active: currentPage === 'signature' }">Assinaturas</a></li>
+                <li><a href="/catalog.html" :class="{ active: currentPage === 'catalog' }">Catálogo</a></li>
+                <li><a href="/agency.html" :class="{ active: currentPage === 'agency' }">Rede de Agências</a></li>
             </ul>
 
             <!-- Botões auth desktop -->
@@ -39,8 +39,8 @@
         <div class="mobile-menu" :class="{ open: menuOpen }">
             <ul>
                 <li><a href="/index.html" @click="closeMenu">Início</a></li>
-                <li><a href="/categories.html" @click="closeMenu">Assinaturas</a></li>
-                <li><a href="/products.html" @click="closeMenu">Catálogo</a></li>
+                <li><a href="/signature.html" @click="closeMenu">Assinaturas</a></li>
+                <li><a href="/catalog.html" @click="closeMenu">Catálogo</a></li>
                 <li><a href="/agency.html" @click="closeMenu">Rede de Agências</a></li>
             </ul>
             <div class="mobile-auth">
@@ -75,9 +75,9 @@ export default {
 
         // Detecta qual página está ativa pelo nome do arquivo HTML
         const path = window.location.pathname
-        if (path.includes('categories')) this.currentPage = 'categories'
-        else if (path.includes('products')) this.currentPage = 'products'
-        else if (path.includes('agencies')) this.currentPage = 'agencies'
+        if (path.includes('signature')) this.currentPage = 'signature'
+        else if (path.includes('catalog')) this.currentPage = 'catalog'
+        else if (path.includes('agency')) this.currentPage = 'agency'
         else this.currentPage = 'index'
     },
 
