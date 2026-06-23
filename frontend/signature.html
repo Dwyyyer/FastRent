@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FastRent – Planos de Assinatura</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:   #1a2e5a;
+      --blue:   #2563eb;
+      --gold:   #c9960a;
+      --gold-btn: #c9960a;
+      --btn-basic: #4da8ff;
+      --btn-pro:   #3b82f6;
+      --bg:     #eef0f4;
+      --card:   #ffffff;
+      --text:   #1e293b;
+      --muted:  #64748b;
+      --radius: 14px;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER BANNER ── */
+    .page-header {
+      background: var(--navy);
+      padding: 22px 32px;
+    }
+    .page-header h1 {
+      color: #fff;
+      font-size: clamp(1.15rem, 3vw, 1.55rem);
+      font-weight: 800;
+      letter-spacing: 0.01em;
+    }
+
+    /* ── PLANS SECTION ── */
+    .plans-section {
+      padding: 48px 24px 0;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .plans-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    /* ── PLAN CARD ── */
+    .plan-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1.5px solid #d9dde8;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: box-shadow 0.2s;
+    }
+    .plan-card:hover {
+      box-shadow: 0 8px 28px rgba(0,0,0,0.10);
+    }
+    .plan-card--pro {
+      border: 2.5px solid var(--blue);
+      position: relative;
+    }
+
+    .badge-recommended,
+    .badge-placeholder {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-align: center;
+      padding: 7px 16px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .badge-recommended {
+      background: var(--blue);
+      color: #fff;
+    }
+    .badge-placeholder {
+      background: transparent;
+      color: transparent;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .plan-body {
+      padding: 28px 24px 24px;
+      flex: 1;
+    }
+
+    .plan-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 20px;
+      color: var(--text);
+    }
+    .plan-title .plan-name--basic { color: var(--blue); text-decoration: underline; }
+    .plan-title .plan-name--pro   { color: var(--blue); text-decoration: underline; }
+    .plan-title .plan-name--premium { color: var(--gold); text-decoration: underline; }
+
+    .plan-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .plan-features li {
+      font-size: 0.88rem;
+      color: #374151;
+      line-height: 1.45;
+      padding-left: 18px;
+      position: relative;
+    }
+    .plan-features li::before {
+      content: "•";
+      position: absolute;
+      left: 4px;
+      color: var(--muted);
+    }
+
+    /* ── PLAN CTA ── */
+    .plan-cta {
+      padding: 0 0 0 0;
+    }
+    .btn-select {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      border: none;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: filter 0.15s;
+      color: #fff;
+    }
+    .btn-select:hover { filter: brightness(1.1); }
+    .btn-select--basic   { background: var(--btn-basic); }
+    .btn-select--pro     { background: var(--btn-pro); }
+    .btn-select--premium { background: var(--gold-btn); }
+
+    /* ── PROMO BANNER ── */
+    .promo-banner {
+      max-width: 1100px;
+      margin: 36px auto 0;
+      background: var(--navy);
+      border-radius: var(--radius);
+      padding: 20px 28px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .promo-icon {
+      width: 48px;
+      height: 48px;
+      min-width: 48px;
+      border-radius: 50%;
+      background: var(--blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #fff;
+    }
+    .promo-text { color: #fff; }
+    .promo-text strong {
+      font-size: 1rem;
+      font-weight: 700;
+      display: block;
+      margin-bottom: 2px;
+    }
+    .promo-text span {
+      font-size: 0.84rem;
+      opacity: 0.85;
+    }
+    .code-badge {
+      display: inline-block;
+      background: var(--blue);
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 2px 9px;
+      border-radius: 5px;
+      margin-left: 5px;
+      letter-spacing: 0.04em;
+    }
+
+    /* ── HOW IT WORKS ── */
+    .how-section {
+      max-width: 1100px;
+      margin: 56px auto 0;
+      padding: 0 24px 60px;
+      text-align: center;
+    }
+    .how-section h2 {
+      font-size: clamp(1.2rem, 3vw, 1.6rem);
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--navy);
+      margin-bottom: 8px;
+    }
+    .how-section .subtitle {
+      font-size: 0.92rem;
+      color: var(--muted);
+      margin-bottom: 36px;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      text-align: center;
+    }
+    .step-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1.5px solid #d9dde8;
+      padding: 28px 22px 26px;
+    }
+    .step-card h3 {
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--navy);
+      margin-bottom: 14px;
+    }
+    .step-card p {
+      font-size: 0.87rem;
+      color: #4b5563;
+      line-height: 1.55;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 820px) {
+      .plans-grid,
+      .steps-grid {
+        grid-template-columns: 1fr;
+        max-width: 480px;
+        margin: 0 auto;
+      }
+      .plan-card--pro { order: -1; }
+    }
+
+    @media (max-width: 520px) {
+      .page-header { padding: 18px 20px; }
+      .plans-section { padding: 32px 16px 0; }
+      .promo-banner { padding: 16px 18px; gap: 14px; flex-wrap: wrap; }
+      .how-section { padding: 0 16px 48px; margin-top: 40px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="navbar"></div>
+
+   <!-- HEADER -->
+  <header class="page-header">
+    <h1>Veja nossos Planos de assinatura!</h1>
+  </header>
+
+  <!-- PLANS -->
+  <section class="plans-section">
+    <div class="plans-grid">
+
+      <!-- BÁSICO -->
+      <div class="plan-card">
+        <div class="badge-placeholder">Recomendado</div>
+        <div class="plan-body">
+          <p class="plan-title">Plano <span class="plan-name--basic">Básico</span>:</p>
+          <ul class="plan-features">
+            <li>5 a 10% de desconto no aluguel de um carro;</li>
+            <li>Direito a uma diária gratuita no mês (classe econômica);</li>
+            <li>+25 pontos acumulados no plano de assinatura.</li>
+          </ul>
+        </div>
+        <div class="plan-cta">
+          <button class="btn-select btn-select--basic">Selecionar</button>
+        </div>
+      </div>
+
+      <!-- PRO (recommended) -->
+      <div class="plan-card plan-card--pro">
+        <div class="badge-recommended">Recomendado</div>
+        <div class="plan-body">
+          <p class="plan-title">Plano <span class="plan-name--pro">Pro</span>:</p>
+          <ul class="plan-features">
+            <li>15 a 20% de desconto no aluguel de um carro;</li>
+            <li>Direito a três diárias gratuitas no mês (classe média);</li>
+            <li>+50 pontos acumulados no plano de assinatura.</li>
+          </ul>
+        </div>
+        <div class="plan-cta">
+          <button class="btn-select btn-select--pro">Selecionar</button>
+        </div>
+      </div>
+
+      <!-- PREMIUM -->
+      <div class="plan-card">
+        <div class="badge-placeholder">Recomendado</div>
+        <div class="plan-body">
+          <p class="plan-title">Plano <span class="plan-name--premium">Premium</span>:</p>
+          <ul class="plan-features">
+            <li>25 a 30% de desconto no aluguel de um carro;</li>
+            <li>Direito a cinco diárias gratuitas no mês (classe média);</li>
+            <li>+75 pontos acumulados no plano de assinatura.</li>
+          </ul>
+        </div>
+        <div class="plan-cta">
+          <button class="btn-select btn-select--premium">Selecionar</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- PROMO BANNER -->
+    <div class="promo-banner">
+      <div class="promo-icon">%</div>
+      <div class="promo-text">
+        <strong>Desconto de 10% na primeira locação!</strong>
+        <span>Válido para qualquer categoria - use o código <span class="code-badge">aluga10</span></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how-section">
+    <h2>Como funciona a FastRent?</h2>
+    <p class="subtitle">Aluguel de carro sem sair de casa, do início ao fim.</p>
+
+    <div class="steps-grid">
+      <div class="step-card">
+        <h3>Escolha e Reserve</h3>
+        <p>Selecione o carro ideal pelo nosso catálogo e agende a entrega com apenas alguns toques.</p>
+      </div>
+      <div class="step-card">
+        <h3>Receba em Casa</h3>
+        <p>Um de nossos motoristas leva o carro até você no endereço e horário que preferir. Sem filas, sem agências.</p>
+      </div>
+      <div class="step-card">
+        <h3>Devolva Quando Quiser</h3>
+        <p>Quando terminar, chame um motorista pelo app. Ele vai até você, retira o carro e pronto, sem deslocamento da sua parte.</p>
+      </div>
+    </div>
+  </section>
+
+  <script type="module" src="/src/main-signature.js"></script>
+</body>
+</html>
