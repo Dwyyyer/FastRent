@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FastRent – Catálogo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:       #0f2d5e;
+      --navy-mid:   #143766;
+      --blue:       #1e5cb3;
+      --blue-hover: #1649a0;
+      --accent-pro:     #1e5cb3;
+      --accent-basic:   #1e5cb3;
+      --accent-premium: #1e5cb3;
+      --card-bg:    #ffffff;
+      --page-bg:    #f1f4f8;
+      --border:     #e0e6ef;
+      --text-main:  #1a2840;
+      --text-muted: #6b7a95;
+      --text-sm:    0.8125rem;
+      --radius-card: 12px;
+      --shadow-card: 0 2px 12px rgba(15,45,94,.09);
+      --shadow-hover: 0 6px 24px rgba(15,45,94,.16);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--page-bg);
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── HERO HEADER ─────────────────────────────────────────── */
+    .catalog-hero {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+      color: #fff;
+      padding: 40px 24px 48px;
+    }
+
+    .catalog-hero__inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .catalog-hero h1 {
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: 700;
+      margin-bottom: 6px;
+      letter-spacing: -0.3px;
+    }
+
+    .catalog-hero p {
+      font-size: var(--text-sm);
+      opacity: 0.75;
+      max-width: 420px;
+    }
+
+    /* ── FILTER BAR ──────────────────────────────────────────── */
+    .filter-bar {
+      max-width: 1200px;
+      margin: -28px auto 0;
+      padding: 0 24px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .filter-bar__form {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(15,45,94,.12);
+      padding: 16px 20px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .filter-bar__form select,
+    .filter-bar__form input {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      font-family: inherit;
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+      background: #f7f9fc;
+      appearance: none;
+      outline: none;
+      cursor: pointer;
+      transition: border-color .2s;
+    }
+
+    .filter-bar__form select:focus,
+    .filter-bar__form input:focus {
+      border-color: var(--blue);
+      background: #fff;
+      color: var(--text-main);
+    }
+
+    /* ── GRID SECTION ────────────────────────────────────────── */
+    .catalog-grid {
+      max-width: 1200px;
+      margin: 32px auto 48px;
+      padding: 0 24px;
+    }
+
+    .catalog-grid__results {
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .cars-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    /* ── CAR CARD ────────────────────────────────────────────── */
+    .car-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      border: 2px solid transparent;
+      padding: 20px 20px 22px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      transition: box-shadow .2s, border-color .2s, transform .18s;
+      cursor: pointer;
+    }
+
+    .car-card:hover {
+      box-shadow: var(--shadow-hover);
+      transform: translateY(-3px);
+    }
+
+    .car-card--featured {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 1px var(--blue), var(--shadow-hover);
+    }
+
+    .car-card__header {
+      text-align: center;
+      width: 100%;
+    }
+
+    .car-card__name {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-main);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      line-height: 1.35;
+    }
+
+    .car-card__plan {
+      display: inline-block;
+      margin-top: 5px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--blue);
+      text-decoration: none;
+    }
+
+    .car-card__plan:hover { text-decoration: underline; }
+
+    .car-card__img-wrap {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 110px;
+    }
+
+    .car-card__img {
+      width: 100%;
+      max-width: 200px;
+      height: 110px;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,.12));
+    }
+
+    /* placeholder car illustration via inline SVG background */
+    .car-card__img-placeholder {
+      width: 200px;
+      height: 110px;
+      background: #f1f4f8;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #b0bdd0;
+      font-size: 0.7rem;
+    }
+
+    .car-card__actions {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .btn-reserve {
+      width: 100%;
+      padding: 10px 16px;
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .18s;
+    }
+
+    .btn-reserve:hover { background: var(--blue-hover); }
+
+    .btn-details {
+      background: none;
+      border: none;
+      font-family: inherit;
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0;
+      transition: color .15s;
+    }
+
+    .btn-details:hover { color: var(--blue); }
+
+    /* ── RESPONSIVE ──────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .cars-grid { grid-template-columns: repeat(2, 1fr); }
+      .filter-bar__form { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 580px) {
+      .catalog-hero { padding: 28px 16px 44px; }
+
+      .filter-bar { padding: 0 16px; }
+      .filter-bar__form {
+        grid-template-columns: 1fr 1fr;
+        padding: 14px 14px;
+        gap: 10px;
+      }
+
+      .catalog-grid { padding: 0 16px; margin-top: 24px; }
+
+      .cars-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      /* On mobile, card goes horizontal (image left, info right) */
+      .car-card {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        padding: 16px;
+        gap: 0;
+      }
+
+      .car-card__header { flex: 1 1 calc(100% - 100px); order: 1; text-align: left; padding-right: 8px; }
+      .car-card__img-wrap { flex: 0 0 100px; order: 2; min-height: unset; }
+      .car-card__img { max-width: 100px; height: 70px; }
+      .car-card__actions { flex: 1 1 100%; order: 3; margin-top: 12px; flex-direction: row; gap: 10px; align-items: center; }
+      .btn-reserve { flex: 1; }
+      .btn-details { flex-shrink: 0; white-space: nowrap; }
+    }
+
+    @media (max-width: 380px) {
+      .filter-bar__form { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .car-card, .btn-reserve { transition: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="navbar"></div>
+
+  <!-- HERO -->
+  <section class="catalog-hero">
+    <div class="catalog-hero__inner">
+      <h1>Escolha seu Carro</h1>
+      <p>Veja nossas opções e encontre o veículo ideal para sua necessidade.</p>
+    </div>
+  </section>
+
+  <!-- FILTROS -->
+  <div class="filter-bar">
+    <div class="filter-bar__form">
+      <select aria-label="Categoria">
+        <option value="" disabled selected>Categoria</option>
+        <option>Hatch</option>
+        <option>Sedan</option>
+        <option>SUV</option>
+        <option>Picape</option>
+      </select>
+      <select aria-label="Marca">
+        <option value="" disabled selected>Marca</option>
+        <option>Nissan</option>
+        <option>GM</option>
+        <option>Audi</option>
+        <option>Peugeot</option>
+      </select>
+      <select aria-label="Modelo">
+        <option value="" disabled selected>Modelo</option>
+      </select>
+      <select aria-label="Ano">
+        <option value="" disabled selected>Ano</option>
+        <option>2024</option>
+        <option>2023</option>
+        <option>2022</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- GRADE DE VEÍCULOS -->
+  <section class="catalog-grid">
+    <p class="catalog-grid__results">6 veículos encontrados</p>
+
+    <div class="cars-grid">
+
+      <!-- Card 1 -->
+      <div class="car-card">
+        <div class="car-card__header">
+          <p class="car-card__name">NISSAN KAIT AT 1.6 ou similar*</p>
+          <a href="#" class="car-card__plan">Plano Pro</a>
+        </div>
+        <div class="car-card__img-wrap">
+          <img class="car-card__img"
+            src="https://cdn.motor1.com/images/mgl/KbbEO/s3/nissan-kicks-2023.webp"
+            alt="Nissan KAIT AT 1.6"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="car-card__img-placeholder" style="display:none">
+            <span>📷 Imagem indisponível</span>
+          </div>
+        </div>
+        <div class="car-card__actions">
+          <button class="btn-reserve">Reserve agora</button>
+          <button class="btn-details">Mostrar detalhes</button>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="car-card">
+        <div class="car-card__header">
+          <p class="car-card__name">GM EQUINOX 1.5 ou similar*</p>
+          <a href="#" class="car-card__plan">Plano Básico</a>
+        </div>
+        <div class="car-card__img-wrap">
+          <img class="car-card__img"
+            src="https://cdn.motor1.com/images/mgl/JoRNj/s3/chevrolet-equinox-2024.webp"
+            alt="GM Equinox 1.5"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="car-card__img-placeholder" style="display:none">
+            <span>📷 Imagem indisponível</span>
+          </div>
+        </div>
+        <div class="car-card__actions">
+          <button class="btn-reserve">Reserve agora</button>
+          <button class="btn-details">Mostrar detalhes</button>
+        </div>
+      </div>
+
+      <!-- Card 3 – destaque -->
+      <div class="car-card car-card--featured">
+        <div class="car-card__header">
+          <p class="car-card__name">Audi A3 Sedan AT Híbrido ou similar*</p>
+          <a href="#" class="car-card__plan">Plano Premium</a>
+        </div>
+        <div class="car-card__img-wrap">
+          <img class="car-card__img"
+            src="https://cdn.motor1.com/images/mgl/7XVqLz/s3/audi-a3-sedan-2023.webp"
+            alt="Audi A3 Sedan AT Híbrido"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="car-card__img-placeholder" style="display:none">
+            <span>📷 Imagem indisponível</span>
+          </div>
+        </div>
+        <div class="car-card__actions">
+          <button class="btn-reserve">Reserve agora</button>
+          <button class="btn-details">Mostrar detalhes</button>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="car-card">
+        <div class="car-card__header">
+          <p class="car-card__name">Peugeot 208 1.0 Turbo ou similar*</p>
+          <a href="#" class="car-card__plan">Plano Pro</a>
+        </div>
+        <div class="car-card__img-wrap">
+          <img class="car-card__img"
+            src="https://cdn.motor1.com/images/mgl/MW9WY/s3/peugeot-208-2023-brasil.webp"
+            alt="Peugeot 208 1.0 Turbo"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="car-card__img-placeholder" style="display:none">
+            <span>📷 Imagem indisponível</span>
+          </div>
+        </div>
+        <div class="car-card__actions">
+          <button class="btn-reserve">Reserve agora</button>
+          <button class="btn-details">Mostrar detalhes</button>
+        </div>
+      </div>
+
+      <!-- Card 5 -->
+      <div class="car-card">
+        <div class="car-card__header">
+          <p class="car-card__name">Peugeot 2008 ALLURE 1200 AT ou similar*</p>
+          <a href="#" class="car-card__plan">Plano Premium</a>
+        </div>
+        <div class="car-card__img-wrap">
+          <img class="car-card__img"
+            src="https://cdn.motor1.com/images/mgl/7XVqPB/s3/peugeot-2008-2023-brasil.webp"
+            alt="Peugeot 2008 ALLURE 1200 AT"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="car-card__img-placeholder" style="display:none">
+            <span>📷 Imagem indisponível</span>
+          </div>
+        </div>
+        <div class="car-card__actions">
+          <button class="btn-reserve">Reserve agora</button>
+          <button class="btn-details">Mostrar detalhes</button>
+        </div>
+      </div>
+
+      <!-- Card 6 -->
+      <div class="car-card">
+        <div class="car-card__header">
+          <p class="car-card__name">Toyota Corolla 2.0 AT ou similar*</p>
+          <a href="#" class="car-card__plan">Plano Básico</a>
+        </div>
+        <div class="car-card__img-wrap">
+          <img class="car-card__img"
+            src="https://cdn.motor1.com/images/mgl/MWenl/s3/toyota-corolla-2023-brasil.webp"
+            alt="Toyota Corolla 2.0 AT"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="car-card__img-placeholder" style="display:none">
+            <span>📷 Imagem indisponível</span>
+          </div>
+        </div>
+        <div class="car-card__actions">
+          <button class="btn-reserve">Reserve agora</button>
+          <button class="btn-details">Mostrar detalhes</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <script type="module" src="/src/main-catalog.js"></script>
+</body>
+</html>
