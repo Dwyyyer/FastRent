@@ -15,13 +15,32 @@ CREATE TABLE products (
     REFERENCES categories(id)
 );
 
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(120) NOT NULL,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE refresh_tokens (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  token TEXT NOT NULL UNIQUE,
+  expires_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW(),
+  CONSTRAINT fk_refresh_tokens_user
+    FOREIGN KEY (user_id)
+    REFERENCES users(id) ON DELETE CASCADE
+);
+
 INSERT INTO categories (name, description)
 VALUES
-('Eletrônicos', 'Produtos eletrônicos em geral'),
-('Livros', 'Livros físicos e digitais');
+  ('Eletrônicos', 'Produtos eletrônicos em geral'),
+  ('Livros', 'Livros físicos e digitais');
 
 INSERT INTO products (category_id, name, price, stock)
 VALUES
-(1, 'Mouse USB', 59.90, 10),
-(1, 'Teclado Mecânico', 249.90, 5),
-(2, 'Algoritmos em Prática', 89.90, 20);
+  (1, 'Mouse USB', 59.90, 10),
+  (1, 'Teclado Mecânico', 249.90, 5),
+  (2, 'Algoritmos em Prática', 89.90, 20);

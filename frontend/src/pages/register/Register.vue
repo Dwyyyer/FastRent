@@ -34,6 +34,7 @@
 
 <script>
 import AuthFormContainer from "../../components/AuthFormContainer.vue";
+import { request } from "../../api.js";
 
 export default {
   components: {
@@ -46,13 +47,30 @@ export default {
         name: "",
         email: "",
         password: ""
-      }
+      },
+
+      isSubmitting: false
     };
   },
 
   methods: {
-    register() {
-      console.log(this.form);
+    async register() {
+      if (this.isSubmitting) return;
+      this.isSubmitting = true;
+
+      try {
+        await request("/auth/register", {
+          method: "POST",
+          body: JSON.stringify(this.form)
+        });
+
+        // backend retorna { user }, aqui não precisamos do payload
+        window.location.href = "/login.html";
+      } catch (err) {
+        alert(err?.message || "Falha ao cadastrar");
+      } finally {
+        this.isSubmitting = false;
+      }
     }
   }
 };
