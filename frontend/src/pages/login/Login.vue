@@ -27,6 +27,7 @@
 
 <script>
 import AuthFormContainer from "../../components/AuthFormContainer.vue";
+import { request } from "../../api.js";
 
 export default {
   components: {
@@ -38,13 +39,41 @@ export default {
       form: {
         email: "",
         password: ""
-      }
+      },
+
+      isSubmitting: false
     };
   },
 
   methods: {
-    login() {
-      console.log(this.form);
+    async login() {
+      if (this.isSubmitting) return;
+      this.isSubmitting = true;
+
+      try {
+        const envelope = await request("/auth/login", {
+          method: "POST",
+          body: JSON.stringify(this.form)
+        });
+
+        // sendResponse() envolve o payload em { success, message, data }
+        // os tokens estão em envelope.data, não diretamente em envelope
+        const payload = envelope?.data ?? envelope;
+
+        localStorage.setItem("accessToken", payload?.accessToken ?? "");
+        localStorage.setItem("refreshToken", payload?.refreshToken ?? "");
+        if (payload?.user) localStorage.setItem("authUser", JSON.stringify(payload.user));
+
+        // Notifica o Navbar (mesma aba) que o estado de auth mudou.
+        // O evento 'storage' nativo não dispara na própria aba.
+        window.dispatchEvent(new CustomEvent("auth:changed"));
+
+        window.location.href = "/index.html";
+      } catch (err) {
+        alert(err?.message || "Falha ao fazer login");
+      } finally {
+        this.isSubmitting = false;
+      }
     }
   }
 };
