@@ -11,6 +11,7 @@ A plataforma utiliza tecnologia de geolocalização, gestão de frota e assinatu
 ## Autores
 - Daniel Tiburcio de Araújo - 5163949
 - Gabriel Buzollo Lininberg - 5167865
+- Jean Carlos Ferreira Fonseca - 5168085
 - Kaike Garcia Oliveira - 5168489
 - Pedro Henrique Oliveira de Almeida - 5167409
 - Pedro Paulo de Souza Talala – 5155207
