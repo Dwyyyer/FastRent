@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <title>FastRent - Início</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- FONT AWESOME -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+    <style>
+        body {
+            margin: 0;
+            background: #f5f5f5;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .second-header {
+            background: #0f2f4f;
+            color: white;
+            padding: 25px 40px;
+            font-size: 1.3rem;
+            font-weight: 500;
+        }
+
+        .hero-body {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            padding: 30px;
+        }
+
+        .agency-container {
+            width: 100%;
+            max-width: 900px;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+        }
+
+        .title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .search-bar-container {
+            background: #e5e5e5;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 30px;
+        }
+
+        .search-bar-field {
+            position: relative;
+        }
+
+        .search-bar-field input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px 40px 12px 12px;
+            border: 1px solid #bdbdbd;
+        }
+
+        .search-bar-field i {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .agency-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .agency-item {
+            background: #dddddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+        }
+
+        .agency-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .agency-info h4 {
+            margin: 0;
+        }
+
+        .agency-info small {
+            color: #555;
+        }
+
+        .hero-footer {
+            background: linear-gradient(
+                90deg,
+                #0f2f4f 0%,
+                #145fb8 100%
+            );
+            color: white;
+            padding: 25px 40px;
+        }
+
+        .hero-footer-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .hero-footer-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .hero-footer-list li {
+            margin: 6px 0;
+        }
+
+        .hero-footer-list i {
+            margin-right: 8px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <div id="navbar"></div>
+    <!-- HERO -->
+    <section class="hero">
+
+        <!-- HEADER AZUL -->
+        <div class="second-header">
+            Encontre nossas agências próximas de você!
+        </div>
+
+        <!-- CONTEÚDO -->
+        <div class="hero-body">
+
+            <div class="agency-container">
+
+                <div class="title">
+                    Encontre uma agência:
+                </div>
+
+                <!-- SEARCH BAR -->
+                <div class="search-bar">
+
+                    <div class="search-bar-container">
+
+                        <div class="search-bar-field">
+                            <input type="text" placeholder="Uberaba" />
+
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- LISTA DE AGÊNCIAS -->
+                <div class="agency-list">
+
+                    <div class="agency-item">
+                        <div class="agency-info">
+                            <i class="fa-solid fa-plane-departure"></i>
+
+                            <div>
+                                <small>Uberaba - MG</small>
+                                <h4>Agência Aeroporto</h4>
+                            </div>
+                        </div>
+
+                        <i class="fa-solid fa-location-dot"></i>
+                    </div>
+
+                    <div class="agency-item">
+                        <div class="agency-info">
+                            <i class="fa-solid fa-building"></i>
+
+                            <div>
+                                <small>Uberaba - MG</small>
+                                <h4>Agência Atacado</h4>
+                            </div>
+                        </div>
+
+                        <i class="fa-solid fa-location-dot"></i>
+                    </div>
+
+                    <div class="agency-item">
+                        <div class="agency-info">
+                            <i class="fa-solid fa-school"></i>
+
+                            <div>
+                                <small>Uberaba - MG</small>
+                                <h4>Agência Campus Uniube</h4>
+                            </div>
+                        </div>
+
+                        <i class="fa-solid fa-location-dot"></i>
+                    </div>
+
+                    <div class="agency-item">
+                        <div class="agency-info">
+                            <i class="fa-solid fa-building-columns"></i>
+
+                            <div>
+                                <small>Uberaba - MG</small>
+                                <h4>Agência Centro Uberaba</h4>
+                            </div>
+                        </div>
+
+                        <i class="fa-solid fa-location-dot"></i>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- FOOTER -->
+        <div class="hero-footer">
+            <div class="hero-footer-title">
+                Contatos
+            </div>
+
+            <ul class="hero-footer-list">
+                <li><i class="fa-solid fa-phone"></i> Central de atendimento</li>
+                <li><i class="fa-brands fa-instagram"></i> Instagram</li>
+                <li><i class="fa-brands fa-whatsapp"></i> Whatsapp</li>
+            </ul>
+        </div>
+
+    </section>
+    <script type="module" src="/src/main-agency.js"></script>
+
+</body>
+
+</html>

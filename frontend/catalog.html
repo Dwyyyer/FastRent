@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FastRent – Catálogo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:       #0f2d5e;
+      --navy-mid:   #143766;
+      --blue:       #1e5cb3;
+      --blue-hover: #1649a0;
+      --card-bg:    #ffffff;
+      --page-bg:    #f1f4f8;
+      --border:     #e0e6ef;
+      --text-main:  #1a2840;
+      --text-muted: #6b7a95;
+      --text-sm:    0.8125rem;
+      --radius-card: 12px;
+      --shadow-card: 0 2px 12px rgba(15,45,94,.09);
+      --shadow-hover: 0 6px 24px rgba(15,45,94,.16);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--page-bg);
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── HERO HEADER ─────────────────────────────────────────── */
+    .catalog-hero {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+      color: #fff;
+      padding: 40px 24px 48px;
+    }
+    .catalog-hero__inner { max-width: 1200px; margin: 0 auto; }
+    .catalog-hero h1 {
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: 700;
+      margin-bottom: 6px;
+      letter-spacing: -0.3px;
+    }
+    .catalog-hero p { font-size: var(--text-sm); opacity: 0.75; max-width: 420px; }
+
+    /* ── FILTER BAR ──────────────────────────────────────────── */
+    .filter-bar {
+      max-width: 1200px;
+      margin: -28px auto 0;
+      padding: 0 24px;
+      position: relative;
+      z-index: 2;
+    }
+    .filter-bar__form {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(15,45,94,.12);
+      padding: 16px 20px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .filter-bar__form select,
+    .filter-bar__form input {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      font-family: inherit;
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+      background: #f7f9fc;
+      appearance: none;
+      outline: none;
+      cursor: pointer;
+      transition: border-color .2s;
+    }
+    .filter-bar__form select:focus,
+    .filter-bar__form input:focus {
+      border-color: var(--blue);
+      background: #fff;
+      color: var(--text-main);
+    }
+
+    /* ── GRID SECTION ────────────────────────────────────────── */
+    .catalog-grid {
+      max-width: 1200px;
+      margin: 32px auto 48px;
+      padding: 0 24px;
+    }
+    .catalog-grid__results { font-size: var(--text-sm); color: var(--text-muted); margin-bottom: 20px; }
+    .cars-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+    /* ── CAR CARD ────────────────────────────────────────────── */
+    .car-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      border: 2px solid transparent;
+      padding: 20px 20px 22px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      transition: box-shadow .2s, border-color .2s, transform .18s;
+      cursor: pointer;
+    }
+    .car-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-3px); }
+    .car-card--featured {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 1px var(--blue), var(--shadow-hover);
+    }
+    .car-card__header { text-align: center; width: 100%; }
+    .car-card__name {
+      font-size: 0.78rem; font-weight: 700; color: var(--text-main);
+      text-transform: uppercase; letter-spacing: 0.3px; line-height: 1.35;
+    }
+    .car-card__plan {
+      display: inline-block; margin-top: 5px; font-size: 0.75rem;
+      font-weight: 600; color: var(--blue); text-decoration: none;
+    }
+    .car-card__plan:hover { text-decoration: underline; }
+    .car-card__img-wrap {
+      width: 100%; display: flex; align-items: center;
+      justify-content: center; min-height: 110px;
+    }
+    .car-card__img {
+      width: 100%; max-width: 200px; height: 110px;
+      object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,.12));
+    }
+    .car-card__img-placeholder {
+      width: 200px; height: 110px; background: #f1f4f8; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: #b0bdd0; font-size: 0.7rem;
+    }
+    .car-card__actions {
+      width: 100%; display: flex; flex-direction: column;
+      align-items: center; gap: 8px; margin-top: 4px;
+    }
+    .btn-reserve {
+      width: 100%; padding: 10px 16px; background: var(--blue); color: #fff;
+      border: none; border-radius: 7px; font-family: inherit;
+      font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: background .18s;
+    }
+    .btn-reserve:hover { background: var(--blue-hover); }
+    .btn-track {
+      width: 100%; padding: 9px 16px; background: transparent;
+      color: var(--blue); border: 1.5px solid var(--blue); border-radius: 7px;
+      font-family: inherit; font-size: 0.85rem; font-weight: 600;
+      cursor: pointer; transition: background .18s, color .18s;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .btn-track:hover { background: var(--blue); color: #fff; }
+
+    /* ── RESPONSIVE ──────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .cars-grid { grid-template-columns: repeat(2, 1fr); }
+      .filter-bar__form { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 580px) {
+      .catalog-hero { padding: 28px 16px 44px; }
+      .filter-bar { padding: 0 16px; }
+      .filter-bar__form { grid-template-columns: 1fr 1fr; padding: 14px 14px; gap: 10px; }
+      .catalog-grid { padding: 0 16px; margin-top: 24px; }
+      .cars-grid { grid-template-columns: 1fr; gap: 16px; }
+      .car-card { flex-direction: row; flex-wrap: wrap; align-items: flex-start; padding: 16px; gap: 0; }
+      .car-card__header { flex: 1 1 calc(100% - 100px); order: 1; text-align: left; padding-right: 8px; }
+      .car-card__img-wrap { flex: 0 0 100px; order: 2; min-height: unset; }
+      .car-card__img { max-width: 100px; height: 70px; }
+      .car-card__actions { flex: 1 1 100%; order: 3; margin-top: 12px; flex-direction: row; gap: 8px; align-items: center; }
+      .btn-reserve { flex: 1; }
+      .btn-track { flex: 1; }
+    }
+    @media (max-width: 380px) { .filter-bar__form { grid-template-columns: 1fr; } }
+    @media (prefers-reduced-motion: reduce) { .car-card, .btn-reserve { transition: none; } }
+
+    /* ══════════════════════════════════════════════════════════
+       TRACKING MODAL  (Uber/iFood style)
+    ══════════════════════════════════════════════════════════ */
+    .tracking-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      background: #000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s ease;
+    }
+    .tracking-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* Map fills all space above the bottom card */
+    #tracking-map {
+      flex: 1;
+      width: 100%;
+      min-height: 0;
+    }
+
+    /* Top bar floating over map */
+    .tracking-topbar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      z-index: 10001;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: linear-gradient(to bottom, rgba(15,45,94,0.85) 0%, transparent 100%);
+    }
+    .tracking-topbar__back {
+      width: 38px; height: 38px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 50%;
+      color: #fff;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s;
+      flex-shrink: 0;
+    }
+    .tracking-topbar__back:hover { background: rgba(255,255,255,0.25); }
+    .tracking-topbar__title {
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-shadow: 0 1px 3px rgba(0,0,0,.4);
+    }
+    .tracking-topbar__subtitle {
+      color: rgba(255,255,255,0.75);
+      font-size: 0.75rem;
+      text-shadow: 0 1px 3px rgba(0,0,0,.4);
+    }
+
+    /* GPS accuracy badge */
+    .gps-badge {
+      margin-left: auto;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,.2);
+    }
+    .gps-badge.ok { background: rgba(16,185,129,0.25); color: #6ee7b7; }
+    .gps-badge.searching { background: rgba(245,158,11,0.25); color: #fcd34d; }
+    .gps-badge.error { background: rgba(239,68,68,0.25); color: #fca5a5; }
+    .gps-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: currentColor;
+      animation: pulse-dot 1.4s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: .4; transform: scale(.7); }
+    }
+
+    /* ── BOTTOM CARD ─────────────────────────────────────────── */
+    .tracking-card {
+      background: #fff;
+      border-radius: 20px 20px 0 0;
+      box-shadow: 0 -4px 24px rgba(0,0,0,.18);
+      padding: 0;
+      z-index: 10001;
+      max-height: 44vh;
+      overflow-y: auto;
+    }
+
+    .tracking-card__handle {
+      width: 36px; height: 4px;
+      background: #d1d9e6;
+      border-radius: 2px;
+      margin: 10px auto 0;
+    }
+
+    .tracking-card__body { padding: 16px 20px 24px; }
+
+    /* Status row */
+    .tracking-status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .tracking-status__icon {
+      width: 42px; height: 42px;
+      background: linear-gradient(135deg, #1e5cb3, #0f2d5e);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+    .tracking-status__text { flex: 1; }
+    .tracking-status__label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+    .tracking-status__msg {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.3;
+    }
+    .tracking-status__eta {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* ETA chips */
+    .tracking-chips {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .tracking-chip {
+      flex: 1;
+      background: var(--page-bg);
+      border-radius: 10px;
+      padding: 10px 12px;
+      text-align: center;
+    }
+    .tracking-chip__val {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--navy);
+    }
+    .tracking-chip__lbl {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Car info row */
+    .tracking-car {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--page-bg);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+    }
+    .tracking-car__img {
+      width: 72px; height: 44px;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,.15));
+    }
+    .tracking-car__info { flex: 1; }
+    .tracking-car__name { font-size: 0.82rem; font-weight: 700; color: var(--text-main); }
+    .tracking-car__plan { font-size: 0.72rem; color: var(--blue); font-weight: 600; margin-top: 2px; }
+    .tracking-car__plate {
+      background: var(--navy);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 4px 9px;
+      border-radius: 5px;
+      letter-spacing: 0.5px;
+    }
+
+    /* Route stops */
+    .tracking-route {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .tracking-route__stop {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .tracking-route__dot-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 16px;
+      flex-shrink: 0;
+      padding-top: 2px;
+    }
+    .tracking-route__dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .tracking-route__dot.car { background: var(--blue); border: 2.5px solid #fff; box-shadow: 0 0 0 2px var(--blue); }
+    .tracking-route__dot.dest { background: #10b981; border: 2.5px solid #fff; box-shadow: 0 0 0 2px #10b981; }
+    .tracking-route__line { width: 2px; flex: 1; background: #dde3ee; min-height: 18px; margin: 3px 0; }
+    .tracking-route__text { flex: 1; padding-bottom: 18px; }
+    .tracking-route__text:last-child { padding-bottom: 0; }
+    .tracking-route__title { font-size: 0.8rem; font-weight: 600; color: var(--text-main); }
+    .tracking-route__addr { font-size: 0.72rem; color: var(--text-muted); margin-top: 1px; }
+
+    /* Recenter button */
+    .btn-recenter {
+      width: 100%;
+      padding: 12px;
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .18s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .btn-recenter:hover { background: var(--blue-hover); }
+
+    /* ── CUSTOM MAP MARKERS ──────────────────────────────────── */
+    .marker-car-wrap {
+      position: relative;
+      width: 48px; height: 48px;
+    }
+    .marker-car-pulse {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: rgba(30,92,179,0.3);
+      animation: map-pulse 2s ease-out infinite;
+    }
+    .marker-car-icon {
+      position: absolute;
+      inset: 6px;
+      background: var(--navy);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,.35);
+      border: 2.5px solid #fff;
+    }
+    @keyframes map-pulse {
+      0%   { transform: scale(1); opacity: .8; }
+      100% { transform: scale(2.4); opacity: 0; }
+    }
+
+    /* Loading overlay while getting GPS */
+    .gps-loading {
+      position: absolute;
+      inset: 0;
+      background: rgba(15,45,94,0.82);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      z-index: 10002;
+      color: #fff;
+      transition: opacity .4s;
+    }
+    .gps-loading.hidden { opacity: 0; pointer-events: none; }
+    .gps-loading__spinner {
+      width: 52px; height: 52px;
+      border: 4px solid rgba(255,255,255,0.2);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .gps-loading__text { font-size: 0.95rem; font-weight: 600; opacity: .9; }
+    .gps-loading__sub { font-size: 0.78rem; opacity: .6; text-align: center; max-width: 220px; }
+  </style>
+</head>
+<body>
+
+  <div id="navbar"></div>
+
+  <!-- HERO -->
+  <section class="catalog-hero">
+    <div class="catalog-hero__inner">
+      <h1>Escolha seu Carro</h1>
+      <p>Veja nossas opções e encontre o veículo ideal para sua necessidade.</p>
+    </div>
+  </section>
+
+  <!-- FILTROS -->
+  <div class="filter-bar">
+    <div class="filter-bar__form">
+      <select aria-label="Categoria">
+        <option value="" disabled selected>Categoria</option>
+        <option>Hatch</option><option>Sedan</option><option>SUV</option><option>Picape</option>
+      </select>
+      <select aria-label="Marca">
+        <option value="" disabled selected>Marca</option>
+        <option>Nissan</option><option>GM</option><option>Audi</option><option>Peugeot</option>
+      </select>
+      <select aria-label="Modelo"><option value="" disabled selected>Modelo</option></select>
+      <select aria-label="Ano">
+        <option value="" disabled selected>Ano</option>
+        <option>2024</option><option>2023</option><option>2022</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- GRADE DE VEÍCULOS -->
+  <section class="catalog-grid">
+    <p class="catalog-grid__results">6 veículos encontrados</p>
+    <div class="cars-grid" id="cars-grid">
+
+      <!-- Card 1 -->
+      <div class="car-card" data-name="NISSAN KAIT AT 1.6" data-plan="Plano Pro" data-plate="ABC-1234"
+           data-img="./assets/Nissan_Kait.webp">
+        <div class="car-card__header">
+          <p class="car-card__name">NISSAN KAIT AT 1.6 ou similar*</p>
+          <a href="#" class="car-card__plan">Plano Pro</a>
+        </div>
+        <div class="car-card__img-wrap">
+          <img class="car-card__img" src="./assets/Nissan_Kait.webp"
+            alt="Nissan KAIT AT 1.6"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="car-card__img-placeholder" style="display:none"><span>📷 Imagem indisponível</span></div>
+        </div>
+        <div class="car-card__actions">
+          <button class="btn-reserve">Reserve agora</button>
+          <button class="btn-track" onclick="openTracking(this)">📍 Rastrear veículo</button>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="car-card" data-name="GM EQUINOX 1.5" data-plan="Plano Básico" data-plate="DEF-5678"
+           data-img="./assets/Equinox.png">
+        <div class="car-card__header">
+          <p class="car-card__name">GM EQUINOX 1.5 ou similar*</p>
+          <a href="#" class="car-card__plan">Plano Básico</a>
+        </div>
+        <div class="car-card__img-wrap">
+          <img class="car-card__img" src="./assets/Equinox.png"
+            alt="GM Equinox 1.5"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="car-card__img-placeholder" style="display:none"><span>📷 Imagem indisponível</span></div>
+        </div>
+        <div class="car-card__actions">
+          <button class="btn-reserve">Reserve agora</button>
+          <button class="btn-track" onclick="openTracking(this)">📍 Rastrear veículo</button>
+        </div>
+      </div>
+
+      <!-- Card 3 – destaque -->
+      <div class="car-card car-card--featured" data-name="Audi A3 Sedan AT Híbrido" data-plan="Plano Premium" data-plate="GHI-9012"
+           data-img="./assets/novo-a3-model.webp">
+        <div class="car-card__header">
+          <p class="car-card__name">Audi A3 Sedan AT Híbrido ou similar*</p>
+          <a href="#" class="car-card__plan">Plano Premium</a>
+        </div>
+        <div class="car-card__img-wrap">
+          <img class="car-card__img" src="./assets/novo-a3-model.webp"
+            alt="Audi A3 Sedan AT Híbrido"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="car-card__img-placeholder" style="display:none"><span>📷 Imagem indisponível</span></div>
+        </div>
+        <div class="car-card__actions">
+          <button class="btn-reserve">Reserve agora</button>
+          <button class="btn-track" onclick="openTracking(this)">📍 Rastrear veículo</button>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="car-card" data-name="Peugeot 208 1.0 Turbo" data-plan="Plano Pro" data-plate="JKL-3456"
+           data-img="./assets/peugeot_208.webp">
+        <div class="car-card__header">
+          <p class="car-card__name">Peugeot 208 1.0 Turbo ou similar*</p>
+          <a href="#" class="car-card__plan">Plano Pro</a>
+        </div>
+        <div class="car-card__img-wrap">
+          <img class="car-card__img" src="./assets/peugeot_208.webp"
+            alt="Peugeot 208 1.0 Turbo"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="car-card__img-placeholder" style="display:none"><span>📷 Imagem indisponível</span></div>
+        </div>
+        <div class="car-card__actions">
+          <button class="btn-reserve">Reserve agora</button>
+          <button class="btn-track" onclick="openTracking(this)">📍 Rastrear veículo</button>
+        </div>
+      </div>
+
+      <!-- Card 5 -->
+      <div class="car-card" data-name="Peugeot 2008 ALLURE 1200 AT" data-plan="Plano Premium" data-plate="MNO-7890"
+           data-img="./assets/peugeot.png">
+        <div class="car-card__header">
+          <p class="car-card__name">Peugeot 2008 ALLURE 1200 AT ou similar*</p>
+          <a href="#" class="car-card__plan">Plano Premium</a>
+        </div>
+        <div class="car-card__img-wrap">
+          <img class="car-card__img" src="./assets/peugeot.png"
+            alt="Peugeot 2008 ALLURE 1200 AT"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="car-card__img-placeholder" style="display:none"><span>📷 Imagem indisponível</span></div>
+        </div>
+        <div class="car-card__actions">
+          <button class="btn-reserve">Reserve agora</button>
+          <button class="btn-track" onclick="openTracking(this)">📍 Rastrear veículo</button>
+        </div>
+      </div>
+
+      <!-- Card 6 -->
+      <div class="car-card" data-name="Toyota Corolla 2.0 AT" data-plan="Plano Básico" data-plate="PQR-1122"
+           data-img="./assets/Corolla.png">
+        <div class="car-card__header">
+          <p class="car-card__name">Toyota Corolla 2.0 AT ou similar*</p>
+          <a href="#" class="car-card__plan">Plano Básico</a>
+        </div>
+        <div class="car-card__img-wrap">
+          <img class="car-card__img" src="./assets/Corolla.png"
+            alt="Toyota Corolla 2.0 AT"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="car-card__img-placeholder" style="display:none"><span>📷 Imagem indisponível</span></div>
+        </div>
+        <div class="car-card__actions">
+          <button class="btn-reserve">Reserve agora</button>
+          <button class="btn-track" onclick="openTracking(this)">📍 Rastrear veículo</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════
+       TRACKING MODAL
+  ══════════════════════════════════════════════════════════ -->
+  <div class="tracking-overlay" id="trackingOverlay">
+
+    <!-- GPS Loading screen -->
+    <div class="gps-loading" id="gpsLoading">
+      <div class="gps-loading__spinner"></div>
+      <div class="gps-loading__text">Localizando veículo…</div>
+      <div class="gps-loading__sub">Aguarde enquanto obtemos sua localização GPS</div>
+    </div>
+
+    <!-- Top bar -->
+    <div class="tracking-topbar">
+      <button class="tracking-topbar__back" onclick="closeTracking()" aria-label="Voltar">←</button>
+      <div>
+        <div class="tracking-topbar__title" id="topbarTitle">Rastreando veículo</div>
+        <div class="tracking-topbar__subtitle" id="topbarSub">Placa • FastRent</div>
+      </div>
+      <div class="gps-badge searching" id="gpsBadge">
+        <span class="gps-dot"></span>
+        <span id="gpsBadgeText">Buscando GPS</span>
+      </div>
+    </div>
+
+    <!-- Map -->
+    <div id="tracking-map"></div>
+
+    <!-- Bottom card -->
+    <div class="tracking-card">
+      <div class="tracking-card__handle"></div>
+      <div class="tracking-card__body">
+
+        <!-- Status -->
+        <div class="tracking-status">
+          <div class="tracking-status__icon">🚗</div>
+          <div class="tracking-status__text">
+            <div class="tracking-status__label">Status do veículo</div>
+            <div class="tracking-status__msg" id="statusMsg">A caminho da sua localização</div>
+            <div class="tracking-status__eta" id="statusEta">Calculando rota…</div>
+          </div>
+        </div>
+
+        <!-- ETA Chips -->
+        <div class="tracking-chips">
+          <div class="tracking-chip">
+            <div class="tracking-chip__val" id="chipDist">—</div>
+            <div class="tracking-chip__lbl">Distância</div>
+          </div>
+          <div class="tracking-chip">
+            <div class="tracking-chip__val" id="chipEta">—</div>
+            <div class="tracking-chip__lbl">Tempo est.</div>
+          </div>
+          <div class="tracking-chip">
+            <div class="tracking-chip__val" id="chipAccuracy">—</div>
+            <div class="tracking-chip__lbl">Precisão GPS</div>
+          </div>
+        </div>
+
+        <!-- Car info -->
+        <div class="tracking-car">
+          <img class="tracking-car__img" id="trackingCarImg" src="" alt="Carro" />
+          <div class="tracking-car__info">
+            <div class="tracking-car__name" id="trackingCarName">—</div>
+            <div class="tracking-car__plan" id="trackingCarPlan">—</div>
+          </div>
+          <div class="tracking-car__plate" id="trackingCarPlate">—</div>
+        </div>
+
+        <!-- Route -->
+        <div class="tracking-route">
+          <div class="tracking-route__stop">
+            <div class="tracking-route__dot-col">
+              <div class="tracking-route__dot car"></div>
+              <div class="tracking-route__line"></div>
+            </div>
+            <div class="tracking-route__text">
+              <div class="tracking-route__title">🚗 Veículo (sua posição GPS)</div>
+              <div class="tracking-route__addr" id="routeCarAddr">Obtendo localização…</div>
+            </div>
+          </div>
+          <div class="tracking-route__stop">
+            <div class="tracking-route__dot-col">
+              <div class="tracking-route__dot dest"></div>
+            </div>
+            <div class="tracking-route__text">
+              <div class="tracking-route__title">📍 Ponto de entrega</div>
+              <div class="tracking-route__addr">Av. Nenê Sabino, 1801 – Campus Aeroporto, UNIUBE – Uberaba/MG</div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-recenter" id="btnRecenter" onclick="recenterMap()">
+          ⊕ Centralizar mapa
+        </button>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script type="module" src="/src/main-catalog.js"></script>
+
+  <script>
+    // ─────────────────────────────────────────────────────────
+    // CONSTANTS
+    // ─────────────────────────────────────────────────────────
+
+    // UNIUBE Campus Aeroporto – Av. Nenê Sabino, 1801, Uberaba MG
+    const DEST = { lat: -19.73918, lng: -47.91742 };
+    const DEST_LABEL = 'Av. Nenê Sabino, 1801 – Campus Aeroporto, UNIUBE';
+
+    // ─────────────────────────────────────────────────────────
+    // STATE
+    // ─────────────────────────────────────────────────────────
+    let map = null;
+    let carMarker = null;
+    let destMarker = null;
+    let routeLine = null;
+    let watchId = null;
+    let currentCar = {};
+    let lastCarPos = null;
+
+    // ─────────────────────────────────────────────────────────
+    // OPEN / CLOSE
+    // ─────────────────────────────────────────────────────────
+    function openTracking(btn) {
+      const card = btn.closest('.car-card');
+      currentCar = {
+        name:  card.dataset.name,
+        plan:  card.dataset.plan,
+        plate: card.dataset.plate,
+        img:   card.dataset.img
+      };
+
+      // populate UI
+      document.getElementById('topbarTitle').textContent   = currentCar.name;
+      document.getElementById('topbarSub').textContent     = currentCar.plate + ' • FastRent';
+      document.getElementById('trackingCarName').textContent = currentCar.name;
+      document.getElementById('trackingCarPlan').textContent = currentCar.plan;
+      document.getElementById('trackingCarPlate').textContent = currentCar.plate;
+      document.getElementById('trackingCarImg').src        = currentCar.img;
+
+      // show overlay
+      document.getElementById('trackingOverlay').classList.add('active');
+      document.body.style.overflow = 'hidden';
+
+      // show loading
+      document.getElementById('gpsLoading').classList.remove('hidden');
+      setGpsBadge('searching');
+
+      // init map (only once)
+      if (!map) initMap();
+
+      // start GPS watch
+      startGPS();
+    }
+
+    function closeTracking() {
+      document.getElementById('trackingOverlay').classList.remove('active');
+      document.body.style.overflow = '';
+      if (watchId !== null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
+    }
+
+    // ESC to close
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeTracking(); });
+
+    // ─────────────────────────────────────────────────────────
+    // MAP INIT
+    // ─────────────────────────────────────────────────────────
+    function initMap() {
+      map = L.map('tracking-map', {
+        center: [DEST.lat, DEST.lng],
+        zoom: 15,
+        zoomControl: false
+      });
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        maxZoom: 19
+      }).addTo(map);
+
+      // Zoom control bottom-right
+      L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+      // Destination marker (person waiting)
+      destMarker = L.marker([DEST.lat, DEST.lng], {
+        icon: L.divIcon({
+          className: '',
+          html: `
+            <div style="
+              background:#10b981;width:40px;height:40px;border-radius:50%;
+              display:flex;align-items:center;justify-content:center;
+              font-size:1.2rem;box-shadow:0 3px 10px rgba(0,0,0,.35);
+              border:3px solid #fff;
+            ">📍</div>`,
+          iconSize: [40, 40],
+          iconAnchor: [20, 20]
+        })
+      }).addTo(map);
+      destMarker.bindPopup(`<b>Ponto de entrega</b><br>${DEST_LABEL}`, { maxWidth: 220 });
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // GPS
+    // ─────────────────────────────────────────────────────────
+    function startGPS() {
+      if (!('geolocation' in navigator)) {
+        onGpsError({ message: 'GPS não disponível neste dispositivo.' });
+        return;
+      }
+
+      watchId = navigator.geolocation.watchPosition(
+        onGpsSuccess,
+        onGpsError,
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 3000 }
+      );
+    }
+
+    function onGpsSuccess(pos) {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+      const acc = Math.round(pos.coords.accuracy);
+
+      // hide loading screen on first fix
+      document.getElementById('gpsLoading').classList.add('hidden');
+
+      setGpsBadge('ok', `GPS ±${acc}m`);
+      document.getElementById('chipAccuracy').textContent = `±${acc}m`;
+      document.getElementById('routeCarAddr').textContent =
+        `${lat.toFixed(5)}, ${lng.toFixed(5)} (±${acc}m)`;
+
+      updateCarOnMap(lat, lng);
+      updateDistanceEta(lat, lng);
+      lastCarPos = { lat, lng };
+    }
+
+    function onGpsError(err) {
+      document.getElementById('gpsLoading').classList.add('hidden');
+      setGpsBadge('error', 'Sem GPS');
+      document.getElementById('statusMsg').textContent = 'Não foi possível obter sua localização';
+      document.getElementById('statusEta').textContent =
+        err.message || 'Verifique as permissões de localização do seu navegador.';
+      document.getElementById('routeCarAddr').textContent = 'Localização indisponível';
+
+      // Fallback: place car near Uberaba city center so map still works
+      const fallbackLat = -19.7480;
+      const fallbackLng = -47.9300;
+      updateCarOnMap(fallbackLat, fallbackLng, true);
+      updateDistanceEta(fallbackLat, fallbackLng);
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // MAP UPDATES
+    // ─────────────────────────────────────────────────────────
+    function updateCarOnMap(lat, lng, isFallback = false) {
+      const pos = [lat, lng];
+
+      if (!carMarker) {
+        // Create car marker with pulse
+        carMarker = L.marker(pos, {
+          icon: L.divIcon({
+            className: '',
+            html: `
+              <div class="marker-car-wrap">
+                <div class="marker-car-pulse"></div>
+                <div class="marker-car-icon">🚗</div>
+              </div>`,
+            iconSize: [48, 48],
+            iconAnchor: [24, 24]
+          }),
+          zIndexOffset: 1000
+        }).addTo(map);
+
+        carMarker.bindPopup(
+          `<b>${currentCar.name}</b><br>Placa: ${currentCar.plate}${isFallback ? '<br><em>Posição aproximada (GPS indisponível)</em>' : ''}`,
+          { maxWidth: 200 }
+        );
+
+        // Draw route line
+        routeLine = L.polyline([pos, [DEST.lat, DEST.lng]], {
+          color: '#1e5cb3',
+          weight: 4,
+          opacity: 0.75,
+          dashArray: '8, 6'
+        }).addTo(map);
+
+        // Fit map to show both markers
+        map.fitBounds(L.latLngBounds([pos, [DEST.lat, DEST.lng]]).pad(0.2));
+
+      } else {
+        // Smooth move
+        carMarker.setLatLng(pos);
+        routeLine.setLatLngs([pos, [DEST.lat, DEST.lng]]);
+      }
+    }
+
+    function updateDistanceEta(lat, lng) {
+      const dist = haversineKm(lat, lng, DEST.lat, DEST.lng);
+      const avgSpeedKmh = 30; // urban average
+      const etaMin = Math.round((dist / avgSpeedKmh) * 60);
+
+      document.getElementById('chipDist').textContent =
+        dist < 1 ? `${Math.round(dist * 1000)}m` : `${dist.toFixed(1)}km`;
+
+      document.getElementById('chipEta').textContent =
+        etaMin < 1 ? '< 1 min' : `${etaMin} min`;
+
+      document.getElementById('statusEta').textContent =
+        `Chegada estimada em ~${etaMin < 1 ? '1' : etaMin} min · ${dist < 1 ? Math.round(dist*1000)+'m' : dist.toFixed(1)+'km'} de distância`;
+    }
+
+    function recenterMap() {
+      if (!carMarker) return;
+      map.fitBounds(
+        L.latLngBounds([carMarker.getLatLng(), [DEST.lat, DEST.lng]]).pad(0.2),
+        { animate: true, duration: 0.6 }
+      );
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // GPS BADGE
+    // ─────────────────────────────────────────────────────────
+    function setGpsBadge(state, label) {
+      const badge = document.getElementById('gpsBadge');
+      const text  = document.getElementById('gpsBadgeText');
+      badge.className = `gps-badge ${state}`;
+      text.textContent = label || (state === 'ok' ? 'GPS ativo' : state === 'searching' ? 'Buscando GPS' : 'Sem GPS');
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // HAVERSINE DISTANCE (km)
+    // ─────────────────────────────────────────────────────────
+    function haversineKm(lat1, lon1, lat2, lon2) {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat/2)**2 +
+                Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) *
+                Math.sin(dLon/2)**2;
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
+  </script>
+</body>
+</html>
