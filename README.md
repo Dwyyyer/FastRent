@@ -8,6 +8,14 @@ Por meio de um aplicativo intuitivo, os usuários podem selecionar o veículo de
 
 A plataforma utiliza tecnologia de geolocalização, gestão de frota e assinatura digital, garantindo praticidade, segurança e agilidade em todo o processo de locação.
 
+## Autores
+- Daniel Tiburcio de Araújo - 5163949
+- Gabriel Buzollo Lininberg - 5167865
+- Kaike Garcia Oliveira - 5168489
+- Pedro Henrique Oliveira de Almeida - 5167409
+- Pedro Paulo de Souza Talala – 5155207
+- Rayson Aparecido Mariano Nunes - 5166854
+
 ## Como rodar
 
 1. Instale Docker Desktop
@@ -68,25 +76,3 @@ Conection:
 - Maintenance database: fastrent
 - Username: admin
 - Password: admin
-
-## Onde alterar
-
-- Banco e dados iniciais: `database/init/01-schema.sql`
-- Backend Node: `backend/src/server.js`
-- Frontend Vue MPA: `frontend/src/` e arquivos `.html` na raiz de `frontend/`
-- Infra e portas: `docker-compose.yml` e `.env`
-
-## Healthchecks
-
-- Banco: usa healthcheck nativo do container do banco.
-- Backend: só fica `healthy` se responder HTTP e conseguir consultar o banco.
-- Frontend: só fica `healthy` se subir localmente e conseguir acessar o health do backend.
-
-## Arquivos importantes
-
-- `docker-compose.yml`: orquestração principal
-- `.env`: variáveis ativas do ambiente
-- `.env.example`: cópia de referência das variáveis
-- `database/init/01-schema.sql`: criação das tabelas e carga inicial
-- `backend/`: API escolhida
-- `frontend/`: interface escolhida
