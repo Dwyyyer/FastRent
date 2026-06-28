@@ -9,13 +9,13 @@ Por meio de um aplicativo intuitivo, os usuários podem selecionar o veículo de
 A plataforma utiliza tecnologia de geolocalização, gestão de frota e assinatura digital, garantindo praticidade, segurança e agilidade em todo o processo de locação.
 
 ## Autores
-- Daniel Tiburcio de Araújo - 5163949
-- Gabriel Buzollo Lininberg - 5167865
-- Jean Carlos Ferreira Fonseca - 5168085
-- Kaike Garcia Oliveira - 5168489
-- Pedro Henrique Oliveira de Almeida - 5167409
-- Pedro Paulo de Souza Talala – 5155207
-- Rayson Aparecido Mariano Nunes - 5166854
+- Daniel Tiburcio de Araújo
+- Gabriel Buzollo Lininberg
+- Jean Carlos Ferreira Fonseca
+- Kaike Garcia Oliveira
+- Pedro Henrique Oliveira de Almeida
+- Pedro Paulo de Souza Talala
+- Rayson Aparecido Mariano Nunes
 
 ## Como rodar
 
